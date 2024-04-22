@@ -1,5 +1,6 @@
-name: push-resume-to-ec2
+name: Push-to-EC2
 
+# Trigger deployment only on push to main branch
 on:
   push:
     branches:
@@ -8,13 +9,13 @@ on:
 jobs:
   deploy:
     name: Deploy to EC2 on master branch push
-    runs-on: ubunut-latest
+    runs-on: ubuntu-latest
 
     steps:
-      - name: checkout the files
+      - name: Checkout the files
         uses: actions/checkout@v2
 
-      - name: Deploy to server 1
+      - name: Deploy to Server 1
         uses: easingthemes/ssh-deploy@main
         env:
           SSH_PRIVATE_KEY: ${{ secrets.EC2_SSH_KEY }}
@@ -22,11 +23,11 @@ jobs:
           REMOTE_USER: ${{ secrets.USERNAME }}
           TARGET: ${{ secrets.TARGET_DIR }}
 
-      - name: Executing remote ssh comments using ssh key
+      - name: Executing remote ssh commands using ssh key
         uses: appleboy/ssh-action@master
         with:
           host: ${{ secrets.HOST_DNS }}
-          username:  ${{ secrets.USERNAME }}
+          username: ${{ secrets.USERNAME }}
           key: ${{ secrets.EC2_SSH_KEY }}
           script: |
             sudo apt-get -y update
@@ -35,5 +36,3 @@ jobs:
             sudo systemctl enable apache2
             cd home
             sudo mv * /var/www/html
-          
-          
